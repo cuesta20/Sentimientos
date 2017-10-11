@@ -1,0 +1,43 @@
+{# Comentario #}
+<!DOCTYPE html>
+<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">-->
+<html>
+    <head>
+        <title>{% block title %}{% endblock %}</title>   
+		<meta name="tipo_contenido"  content="text/html;" http-equiv="content-type" charset="utf-8">
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        {% block javascript %}<script language="Javascript" src="porter.js"></script>{% endblock %} 
+        {% block ajax %}<script language="Javascript" src="/js/ajax.js"></script>{% endblock %}           
+        {% block css %}<link rel="stylesheet" href="style.css"  type="text/css"/>{% endblock %}
+        <meta name="Title" content="Django[Python]"/>
+        <meta name="Author" content="DAVID" />
+        <meta name="Subject" content="Django[Python]" />
+        <meta name="Description" content="Sentimientos[Python]" />
+        <meta name="Keywords" content="django,python,programacion,Sentimientos" />
+        <meta name="Language" content="Spanish" />
+        <meta name="Revisit" content="15 days" />
+        <meta name="Distribution" content="Local" />
+        <meta name="Robots" content="All" />
+		
+<script language="javascript">
+function mostrar()
+{
+ capa1.style.display="block";
+}
+function ocultar()
+{
+ capa1.style.display="none";
+}
+</script>		
+    </head>
+	{% load staticfiles %} 
+    <body style="background:#7AA0ED">
+	{% block contenido %}	
+	{% block encabezado %}{% endblock%}		
+	{% endblock %}		
+	{% block pie %}	
+	<hr>
+	<p>Sistema de Analisis de Sentimientos con [Python/Django]. Autor : David Cuesta Fecha: 11-10-2017 </p>{% endblock %}
+</body>
+</html>

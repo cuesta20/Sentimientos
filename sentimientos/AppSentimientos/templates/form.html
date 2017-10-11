@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clasificador Naive Bayes</title>
+</head>
+<body>
+    <form method="post">
+        {% csrf_token %}
+        <label for="name">Nombre: </label>
+        <input id="name" type="text" name="name" required />
+        <input type="submit" value="Submit" />
+    </form>
+    <p><b>{{ message }}</b></p>
+</body>
+</html>

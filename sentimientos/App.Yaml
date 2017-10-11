@@ -1,0 +1,88 @@
+application: AppSentimientos
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: false
+
+default_expiration: "24h"
+
+url: "http://62.204.199.211:8880"
+urlSin: '62.204.199.211:8880'
+urlSinPuerto: '62.204.199.211'
+nickname: 'david'
+clave: 'daviduned2017.'
+puerto: 22
+
+handlers: 
+- url: /(?P<a>.+?)/static/(?P<b>.+)
+  static_files: applications/\1/static/\2
+  upload: applications/(.+?)/static/(.+)
+  secure: optional
+
+- url: /favicon.ico
+  static_files: applications/welcome/static/favicon.ico
+  upload: applications/welcome/static/favicon.ico
+
+- url: /robots.txt
+  static_files: applications/welcome/static/robots.txt
+  upload: applications/welcome/static/robots.txt
+
+- url: .*
+#  script: gaehandler.py         # CGI
+#  script: web2py.app # ?
+  script: gaehandler.wsgiapp    # WSGI (Python 2.7 only)
+  secure: optional
+- url: /.*
+  script: manage.py
+- url: /css  #css folder
+  static_dir: css 
+admin_console:
+  pages:
+  - name: Appstats
+    url: /_ah/stats
+skip_files: |
+ ^(.*/)?(
+ (app\.yaml)|
+ (app\.yml)|
+ (index\.yaml)|
+ (index\.yml)|
+ (#.*#)|
+ (.*~)|
+ (.*\.py[co])|
+ (.*/RCS/.*)|
+ (\..*)|
+ (applications/(admin|examples)/.*)|
+ ((admin|examples)\.(w2p|tar))|
+ (applications/.*?/(cron|databases|errors|cache|sessions)/.*)|
+ ((logs|scripts)/.*)|
+ (anyserver\.py)|
+ (web2py\.py)|
+ ((cgi|fcgi|modpython|wsgi)handler\.py)|
+ (epydoc\.(conf|css))|
+ (httpserver\.log)|
+ (logging\.example\.conf)|
+ (route[rs]\.example\.py)|
+ (setup_(app|exe)\.py)|
+ (splashlogo\.gif)|
+ (parameters_\d+\.py)|
+ (options_std.py)|
+ (gluon/tests/.*)|
+ (gluon/(rocket|winservice)\.py)|
+ (contrib/(gateways|markdown|memcache|pymysql)/.*)|
+ (contrib/(populate|taskbar_widget)\.py)|
+ (google_appengine/.*)|
+ (.*\.(bak|orig))|
+ )$
+ 
+builtins:
+- remote_api: on
+- appstats: on
+- admin_redirect: on
+- deferred:
+ 
+libraries:
+   - name: webapp2
+     version: latest
+   - name: jinja2
+     version: latest
+

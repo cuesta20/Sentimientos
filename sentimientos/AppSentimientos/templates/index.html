@@ -1,0 +1,240 @@
+﻿{% extends "base.html" %}
+{% block title %}ANALISIS DE SENTIMIENTOS{% endblock %}
+{% block contenido %}
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script language="javascript">
+ var neutral=0.0;
+ var polar=0.0;
+ var positiva=0.0;
+ var negativa=0.0; 
+ var campoActual="";
+ var idActual=0;
+ var texto="";
+ var textoGoblal="";
+ 
+ Bayes.train = function (text, label) {
+    registerLabel(label);
+    var words = tokenize(text);
+    var length = words.length;
+    for (var i = 0; i < length; i++)
+        incrementStem(words[i], label);
+    incrementDocCount(label);
+};
+
+var tokenize = function (text) {
+    text = text.toLowerCase().replace(/\W/g, ' ').replace(/\s+/g, ' ').trim().split(' ').unique();
+    return text;
+};
+
+function asyncChange()
+{
+    var request;
+    if (window.XMLHttpRequest) {
+        request = new window.XMLHttpRequest();
+    } else {
+        request = new window.ActiveXObject("Microsoft.XMLHTTP");
+    }
+    request.open("GET", "resultado.py", true);
+    request.send();
+   
+    request.onreadystatechange = function()
+    {
+        if (request.readyState == 4 && request.status == 200)
+        {
+            document.getElementById("txtResultado").innerHTML = "Resultado: " + request.responseText + "";
+        }
+    }
+}
+function analizar()
+{
+ var cadena = document.formulario.txtTexto.value;
+ cadena=cadena.toUpperCase();
+ inicializar()
+ asyncChange()
+ 
+ texto='Resultado del Análisis de SENTIMIENTOS: \n';
+ texto=texto+'=======================================\n\n';
+ texto=texto+'Subjetividad \n';
+ texto=texto+'  Neutral: '+neutral.toFixed(2)+'\n';
+ texto=texto+'  Polar: '+polar.toFixed(2)+'\n';
+ texto=texto+'  Positiva:'+positiva.toFixed(2)+'\n';
+ texto=texto+'  Negativa:'+negativa.toFixed(2)+'\n';
+ if (eval(positiva > negativa))
+  {
+     resultado='Positivo';	
+  }
+ else if (eval(positiva < negativa))
+  {
+     resultado='Negativo';	
+  }
+  else if (eval(positiva == negativa))
+  {
+     resultado='Neutro';	
+  }
+ 	 
+ texto=texto+'\nEl Resultado del texto es: '+resultado+'\n';
+ textoGoblal=texto;
+ 
+ if (cadena=="")
+ {
+  alert("Tienes que escribir una cadena de texto");
+  limpiar();
+  return;
+ }
+ document.getElementById("txtResultado").value=texto;
+}
+
+function idioma()
+{
+ var cadena = document.formulario.opcion.value;
+ cadena=cadena.toUpperCase();
+ var campoActual="";
+ var idActual=0;
+ //alert('Texto a Analizar en Idioma: '+cadena);
+ if (cadena=="")
+ {
+  alert("Tienes que elegir un idioma");
+  return;
+ }
+
+ if (cadena=="CASTELLANO")  { cadena=1;}
+ else if (cadena=="INGLES"){ cadena=2;}
+ else if (cadena=="FRANCES") { cadena=3;}
+ else 
+ { 
+  alert(" El Idioma seleccionado no Existe en el Sitio WEB"); 
+  return;
+  }
+ return;
+}
+
+function cambio()
+{
+ //alert(textoGoblal);
+ //document.formulario.txtResultado.value=textoGoblal;
+}
+function algoritmoBayes()
+{
+  var cadena="";
+  var x = document.createElement("INPUT");
+  x.setAttribute("type", "text");
+  x.setAttribute("value", "0");
+  document.body.appendChild(x);
+  cadena=document.formulario.txtTexto.value;
+  /*alert("cadena:"+cadena);
+  window.open("http://localhost:8000/bayes/"+cadena);
+  var f =  document.getElementById('formulario');
+  f.texto.value =cadena;
+  f.resultado.value=texto;
+  */
+  document.getElementById("txtTexto").value=cadena; 
+  document.getElementById("txtResultado").value=texto; 
+  window.open("http://localhost:8000/bayes/"+cadena,'popup', 'width = 600, height = 600');
+  //f.submit();
+  
+  
+}
+function limpiar()
+{
+ document.getElementById("txtTexto").value="";
+ document.getElementById("txtResultado").value="";
+ return;
+ }
+ 
+function inicializar()
+{
+ polar=Math.random();
+ positiva=Math.random();
+ negativa=Math.random();
+ neutral=Math.random();  
+} 
+</script>
+<script language="text/javascript">
+
+ $("#button_rest").click(function(){
+         load_pos_rest();
+      });
+	  
+function load_pos_rest()
+{
+    $.get("/pos/pos_rest/", function(data){
+        for(i=0; i<data.length; i++){
+            $("#div_rest_pos").append('<span>'+data[i].name+' - '+data[i].brand+'</span><br/>');
+        }
+    });
+</script>
+
+<center>
+<div id="resultado" >
+{% block encabezado %}<h1> >> ANALISIS DE SENTIMIENTOS << </h1>{% endblock%}
+<h3>[ Introduzca hasta un maximo de 50000 caracteres ] <h3> 
+
+
+<form class='estiloform' name='formulario' id="formulario" action="" onSubmit="">
+<table name="tabla" border="0">
+<tr>
+<td ALIGN="RIGHT">Idioma:  </td>
+<td align="left">
+<select onChange="javascript:idioma();" name="oIdioma">
+  <option value="Castellano">Castellano</option>
+  <option value="Ingles">Ingles</option>
+  <option value="Frances">Frances</option>
+</select>
+</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td ALIGN="RIGHT">Algoritmo:  </td>
+<td align="left">
+<select onChange="javascript:algoritmo();" name="OAlgoritmo">
+  <option value="Bayes">Naive Bayes</option>
+  <option value="SVM">SVM</option>
+  <option value="Random Forest">Random Forest</option>
+  <option value="Arbol">Árbol de Decisión</option>
+  <option value="LDA">LDA</option>
+  </select>
+</td>
+<td align="left"></td>
+</td>
+</tr>
+<tr>
+<td ALIGN="RIGHT">Introduzca el texto:  </td>
+<td align="left"><textarea rows="30" cols="120" name="txtTexto" id="txtTexto"></textarea></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td ALIGN="left"></td>
+<!--<td align="left"><input type="submit" value="Analizar" name="btnbuscar" size="60"></td>-->
+<td align="left"><button type="button" onclick="javascript:analizar();" name="btnbuscar" size="60">Analizar</button>
+                 <button type="button" onclick="limpiar();" name="btnLimpiar" size="60">Limpiar</button>
+				 <!-- <button id="boton2" name"boton2" onclick="javascript.document.formulario.submit();">Bayes</button> <br/>-->
+                 <button id="boton3" name"boton3" onclick="algoritmoBayes();">Bayes</button> <br/>
+</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td ALIGN="RIGHT">Resultado:</td>
+<td align="left"><textarea rows="12" cols="120" name="txtResultado" id="txtResultado">{{texto}}</textarea></td>
+<td align="left"></td>
+</tr>
+</form>
+<br>
+<p>Fecha: {{ fecha|date:"d/m/Y H:i" }}.</p>
+<!--
+<form class='estiloform' name='formulario1' id="formulario1" action="/bayes" method="get">
+<tr>
+<td ALIGN="RIGHT">Resultado:</td>
+<td align="left"><textarea rows="12" cols="120" name="txtResultado1" id="txtResultado1">{{texto}}</textarea></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td ALIGN="left"></td>
+<td align="left"><input type="submit" value="Analizar1" name="btnbuscar1" size="60" id="btnbuscar1"></td>
+</td>
+<td align="left"></td>
+</tr>
+</form>
+-->
+{% endblock %}
+</div> 
+</center>

@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}ANALISIS DE SENTIMIENTOS{% endblock %}
+{% block contenido %}
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script language="javascript">
+ var neutral=0.0;
+ var polar=0.0;
+ var positiva=0.0;
+ var negativa=0.0; 
+ var campoActual="";
+ var idActual=0;
+ var texto="";
+ var textoGoblal="";
+ var cadenaGlobal="";
+ 
+function asyncChange()
+{
+    var request;
+    if (window.XMLHttpRequest) {
+        request = new window.XMLHttpRequest();
+    } else {
+        request = new window.ActiveXObject("Microsoft.XMLHTTP");
+    }
+    request.open("GET", "resultado.py", true);
+    request.send();
+   
+    request.onreadystatechange = function()
+    {
+        if (request.readyState == 4 && request.status == 200)
+        {
+            document.getElementById("txtResultado").innerHTML = "Resultado: " + request.responseText + "";
+        }
+    }
+}
+function mostrar()
+{
+ var cadena = document.formulario.txtTexto.value;
+ cadena=cadena.toUpperCase();
+ cadenaGlobal=cadena;
+ inicializar()
+ asyncChange()
+ 
+ texto='Resultado del Análisis de SENTIMIENTOS: \n';
+ texto=texto+'=======================================\n\n';
+ texto=texto+'Subjetividad \n';
+ texto=texto+'  Neutral: '+neutral.toFixed(2)+'\n';
+ texto=texto+'  Polar: '+polar.toFixed(2)+'\n';
+ texto=texto+'  Positiva:'+positiva.toFixed(2)+'\n';
+ texto=texto+'  Negativa:'+negativa.toFixed(2)+'\n';
+ if (eval(positiva > negativa))
+  {
+     resultado='Positivo';	
+  }
+ else if (eval(positiva < negativa))
+  {
+     resultado='Negativo';	
+  }
+  else if (eval(positiva == negativa))
+  {
+     resultado='Neutro';	
+  }
+ 	 
+ texto=texto+'\nEl Resultado del texto es: '+resultado+'\n';
+ textoGoblal=texto;
+ 
+ if (cadena=="")
+ {
+  alert("Tienes que escribir una cadena de texto");
+  limpiar();
+  return;
+ }
+ document.getElementById("txtResultado").value=texto;
+ document.getElementById("txtTexto").value=cadenaGlobal;
+ 
+}
+
+</script>
+
+<script>
+$(document).ready( function() {
+    /*$("#load_home").on("click", function() {
+        $("#content").load("content.html");
+    });*/
+	alert(cadenaGlobal);
+});
+</script>
+
+<center>
+<div id="resultado" >
+{% block encabezado %}<h1> >> ANALISIS DE SENTIMIENTOS << </h1>{% endblock%}
+<form class='estiloform' name='formulario' id="formulario" action="" onSubmit="">
+ {% csrf_token %}
+<table name="tabla" border="0">
+<tr>
+<td ALIGN="RIGHT">Texto Analizado:  </td>
+<td align="left"><textarea rows="30" cols="120" name="txtTexto" id="txtTexto" value="{{cadtexto}}"></textarea></td>
+<td align="left"></td>
+</tr>
+<tr><td></td><td></td><td></td></tr>
+<tr>
+<td ALIGN="RIGHT">Resultado:</td>
+<td align="left"><textarea rows="12" cols="120" name="txtResultado" id="txtResultado" value="{{cadresultado}}"></textarea></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td ALIGN="RIGHT">Resultado:</td>
+<td align="left"><button id="boton1" name"boton1" onclick="mostrar();">Ver Resultado</button> <br/></td>
+<td align="left"></td>
+</tr>
+</form>
+<br>
+{% endblock %}
+</div> 
+</center>
